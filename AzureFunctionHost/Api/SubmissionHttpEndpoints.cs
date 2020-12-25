@@ -23,8 +23,8 @@ namespace AzureFunctionHost.Api
             this.sender = sender;
         }
 
-        [FunctionName("Submit-Send")]
-        public async Task<IActionResult> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submit/{user}")] HttpRequest _, string user, ILogger log)
+        [FunctionName("Submission")]
+        public async Task<IActionResult> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submit/{user}")] HttpRequest httpRequest, string user, ILogger log)
         {
             log.LogInformation($"Request Submitted for '{user}'.");
             if (string.IsNullOrWhiteSpace(user))
@@ -38,9 +38,9 @@ namespace AzureFunctionHost.Api
             return new OkObjectResult(response);
         }
 
-        [FunctionName("Submit-Query")]
+        [FunctionName("SubmissionQuery")]
         public async Task<IActionResult> Query(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submit/{submissionId:guid}")] HttpRequest _, Guid submissionId)
+             [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submit/{submissionId:guid}")] HttpRequest httpRequest, Guid submissionId)
         {
             if (submissionId == default)
             {

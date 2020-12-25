@@ -1,14 +1,13 @@
-﻿using System.Linq;
-using AzureFunctionHost.Application.Approvals;
-using AzureFunctionHost.Domain;
-using AzureFunctionHost.Infrastructure;
+﻿using System.Threading.Tasks;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
+
+using AzureFunctionHost.Application.Approvals;
 
 namespace AzureFunctionHost.Application
 {
@@ -21,18 +20,23 @@ namespace AzureFunctionHost.Application
             this.sender = sender;
         }
 
-        [FunctionName("Approve")]
-        public IActionResult Approve(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approval/all/{user}")] HttpRequest _, string user)
+        [FunctionName("Approval")]
+        public async Task<IActionResult> Approve(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approval/all/{user}")] HttpRequest httpRequest, string user)
         {
-            sender.Send(new ApproveAllSubmissions(user));
+            var request = new ApproveAllSubmissions(user);
+            await sender.Send(request);
+
             return new OkResult();
         }
 
-        [FunctionName("ApproveQuery")]
-        public IActionResult Query([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approval/pending")] HttpRequest _)
+        [FunctionName("ApprovalQuery")]
+        public async Task<IActionResult> Query([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approval/pending")] HttpRequest httpRequest)
         {
-            return new OkObjectResult(sender.Send(new QueryPendingSubmissions()));
+            var query = new QueryPendingSubmissions();
+            var results = await sender.Send(query);
+
+            return new OkObjectResult(results);
         }
     }
 }

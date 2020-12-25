@@ -29,9 +29,8 @@ namespace AzureFunctionHost.Application.Approvals
         public Task<IEnumerable<Guid>> Handle(QueryPendingSubmissions request, CancellationToken cancellationToken)
         {
             var newest = approvals.Query().OrderByDescending(x => x.Created).FirstOrDefault()?.Created ?? DateTimeOffset.Now.AddDays(-30);
-            e
 
-            return Enumerable.Empty<string>();
+            return Task.FromResult(Enumerable.Empty<Guid>());
         }
     }
 

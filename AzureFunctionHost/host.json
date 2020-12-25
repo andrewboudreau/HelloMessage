@@ -1,11 +1,13 @@
 {
-    "version": "2.0",
-    "logging": {
-        "applicationInsights": {
-            "samplingExcludedTypes": "Request",
-            "samplingSettings": {
-                "isEnabled": true
-            }
-        }
+  "version": "2.0",
+  "SubmissionAccessToken": "aaaaaaaa-e97a-421a-b36b-fcd88d1eec8d",
+  "ApprovalAccessToken": "bbbbbbbb-e97a-421a-b36b-fcd88d1eec8d",
+  "logging": {
+    "applicationInsights": {
+      "samplingExcludedTypes": "Request",
+      "samplingSettings": {
+        "isEnabled": true
+      }
     }
+  }
 }

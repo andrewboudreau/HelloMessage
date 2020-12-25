@@ -21,6 +21,7 @@ namespace AzureFunctionHost.Domain
 
         public Approval ApproveBy(string approver)
         {
+
             return Approval.By(approver, SubmissionId);
         }
 
