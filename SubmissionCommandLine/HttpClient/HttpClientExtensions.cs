@@ -25,7 +25,7 @@ namespace SubmissionCommandLine
                        .GetRequiredService<IOptions<TClientOptions>>()
                        .Value;
                    options.BaseAddress = httpClientOptions.BaseAddress;
-                   options.Timeout = httpClientOptions.Timeout;
+                   // options.Timeout = httpClientOptions.Timeout;
                })
                //.ConfigurePrimaryHttpMessageHandler(x => new DefaultHttpClientHandler())
                //.AddPolicyHandlerFromRegistry(PolicyName.HttpRetry)

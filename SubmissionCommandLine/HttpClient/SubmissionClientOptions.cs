@@ -2,11 +2,9 @@
 
 namespace SubmissionCommandLine
 {
-    public class SubmissionClientOptions
+    public class SubmissionClientOptions : HttpClientOptions
     {
         public const string SubmissionClient = "SubmissionClient";
-
-        public Uri BaseAddress { get; set; }
 
         public string Submit { get; set; }
 
