@@ -26,13 +26,13 @@ namespace SubmissionCommandLine
 
         public async Task<bool> GetStatus(Guid submissionId)
         {
-            using var response = await httpClient.GetStreamAsync(options.Value.Status);
-            return await JsonSerializer.DeserializeAsync<bool>(response);
+            using var response = await httpClient.GetAsync(options.Value.Status.Replace("{submissionId}", submissionId.ToString()));
+            return await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync());
         }
 
         public async Task<Guid> PostSubmission(string userId)
         {
-            var response = await httpClient.PostAsync(options.Value.Submit, null);
+            using var response = await httpClient.PostAsync(options.Value.Submit.Replace("{userId}", userId), null);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -41,7 +41,6 @@ namespace SubmissionCommandLine
             }
 
             var submissionId = await JsonSerializer.DeserializeAsync<Guid>(await response.Content.ReadAsStreamAsync());
-            Console.WriteLine($"Your submission has been accepted. SubmissionId: {submissionId}");
             return submissionId;
         }
     }

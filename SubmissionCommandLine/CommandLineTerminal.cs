@@ -23,7 +23,7 @@ namespace SubmissionCommandLine
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogDebug($"Starting with arguments: {string.Join(" ", Environment.GetCommandLineArgs())}");
+            Console.WriteLine($"Starting with arguments: {string.Join(" ", Environment.GetCommandLineArgs())}");
 
             appLifetime.ApplicationStarted.Register(() =>
             {
@@ -31,28 +31,58 @@ namespace SubmissionCommandLine
                 {
                     try
                     {
-                        var submissionId = client.PostSubmission("andrewboudreau@gmail.com");
-                        logger.LogInformation($"Submission accepted {submissionId}");                        // Simulate real work is being done
-                        await Task.Delay(3000);
-                        logger.LogInformation($"Done with fake wait...");
+                        bool quit = false;
+                        Guid submissionId = default;
+
+                        do
+                        {
+                            var username = WaitForUserInput();
+                            if (string.IsNullOrWhiteSpace(username))
+                            {
+                                continue;
+                            }
+                            else if (username.Equals("q", StringComparison.OrdinalIgnoreCase))
+                            {
+                                quit = true;
+                            }
+                            else if (username.Equals("c", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (submissionId == default)
+                                {
+                                    Console.WriteLine($"First send a submission by entering a name.");
+                                    continue;
+                                }
+
+                                var status = await client.GetStatus(submissionId);
+                                logger.LogInformation($"Status is {(status ? "accepted" : "rejected")} for {submissionId}.");
+                            }
+                            else
+                            {
+                                submissionId = await client.PostSubmission(username);
+                                logger.LogInformation($"Submission has been accepted. SubmissionId: {submissionId}");
+                            }
+                        } while (!quit);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Unhandled exception"); 
+                        logger.LogError(ex, "Unhandled exception");
                         exitCode = 1;
                     }
                     finally
                     {
-                        logger.LogInformation($"Finally block");
-                        // Stop the application once the work is done
                         appLifetime.StopApplication();
-                        logger.LogInformation($"After stop");
                     }
                 });
             });
 
-            logger.LogInformation($"returning task");
             return Task.CompletedTask;
+        }
+
+        private string WaitForUserInput()
+        {
+            Console.WriteLine();
+            Console.Write("Enter a name for the submission:");
+            return Console.ReadLine();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
