@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AzureFunctionHost.Application;
 using AzureFunctionHost.Application.Submissions;
-using AzureFunctionHost.Domain;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Http;

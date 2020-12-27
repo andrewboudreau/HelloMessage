@@ -30,6 +30,16 @@ namespace AzureFunctionHost.Application
             return new OkResult();
         }
 
+        [FunctionName("ApprovalBatch")]
+        public async Task<IActionResult> ApproveBatch(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approval/all/{user}")] HttpRequest httpRequest, string user)
+        {
+            var request = new ApproveAllSubmissions(user);
+            await sender.Send(request);
+
+            return new OkResult();
+        }
+
         [FunctionName("ApprovalQuery")]
         public async Task<IActionResult> Query([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approval/pending")] HttpRequest httpRequest)
         {

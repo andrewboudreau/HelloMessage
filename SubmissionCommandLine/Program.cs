@@ -12,7 +12,6 @@ namespace SubmissionCommandLine
             await Host.CreateDefaultBuilder(args)
                 .ConfigureServices((context, services) =>
                     services
-                        .Configure<SubmissionClientOptions>(context.Configuration.GetSection(SubmissionClientOptions.SubmissionClient))
                         .AddHttpClient<ISubmissionClient, SubmissionClient, SubmissionClientOptions>(context.Configuration)
                         .AddHostedService<CommandLineTerminal>())
                 .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole().AddDebug())

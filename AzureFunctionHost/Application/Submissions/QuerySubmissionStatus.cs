@@ -21,24 +21,15 @@ namespace AzureFunctionHost.Application.Submissions
     public class CheckStatusHandler : IRequestHandler<QuerySubmissionStatus, bool>
     {
         private readonly SubmissionRepository submissions;
-        private readonly ApprovalRepository approvals;
-
-        public CheckStatusHandler(SubmissionRepository submissions, ApprovalRepository approvals)
+        public CheckStatusHandler(SubmissionRepository submissions)
         {
             this.submissions = submissions;
-            this.approvals = approvals;
         }
 
         public Task<bool> Handle(QuerySubmissionStatus request, CancellationToken cancellationToken)
         {
             var submission = submissions.Find(request.SubmissionId);
-
-            if (approvals.Query().Any(x => x.Created > submission.Created))
-            {
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            return Task.FromResult(submission.Approved);
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using AzureFunctionHost.Domain;
 using AzureFunctionHost.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AzureFunctionHost.Application.Approvals
 {
@@ -18,25 +17,20 @@ namespace AzureFunctionHost.Application.Approvals
     public class QueryPendingSubmissionsHandler : IRequestHandler<QueryPendingSubmissions, IEnumerable<Guid>>
     {
         private readonly SubmissionRepository submissions;
-        private readonly ApprovalRepository approvals;
 
-        public QueryPendingSubmissionsHandler(SubmissionRepository submissions, ApprovalRepository approvals)
+        public QueryPendingSubmissionsHandler(SubmissionRepository submissions)
         {
             this.submissions = submissions;
-            this.approvals = approvals;
         }
 
         public Task<IEnumerable<Guid>> Handle(QueryPendingSubmissions request, CancellationToken cancellationToken)
         {
-            var newest = approvals.Query().OrderByDescending(x => x.Created).FirstOrDefault()?.Created ?? DateTimeOffset.Now.AddDays(-30);
-
-            return Task.FromResult(Enumerable.Empty<Guid>());
+                        return Task.FromResult(Enumerable.Empty<Guid>());
         }
     }
 
     public class PendingSubmissionDto
     {
-
         public PendingSubmissionDto(Submission submission)
         {
             SubmissionId = submission.SubmissionId;

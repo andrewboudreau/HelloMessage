@@ -4,14 +4,14 @@ namespace AzureFunctionHost.Domain.Events
 {
     public class SubmissionApproved : INotification
     {
-        public SubmissionApproved(string userId, Submission submission)
+        public SubmissionApproved(Submission submission, SubmissionResponse response)
         {
-            UserId = userId;
             Submission = submission;
+            Response = response;
         }
 
-        public string UserId { get; }
-
         public Submission Submission { get; }
+
+        public SubmissionResponse Response { get; }
     }
 }

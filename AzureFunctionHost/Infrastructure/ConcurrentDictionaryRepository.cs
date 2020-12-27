@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
+using System.Linq;
 using AzureFunctionHost.Application.Services;
 using AzureFunctionHost.Domain;
 
 namespace AzureFunctionHost.Infrastructure
 {
-    public class ApprovalRepository : ConcurrentDictionaryRepository<Approval>
-    {
-    }
-
-    public class SubmissionRepository : ConcurrentDictionaryRepository<Submission>
-    {
-    }
-
     public class ConcurrentDictionaryRepository<T> : IRepository<Guid, T>
         where T : IIdentifiable<Guid>
     {
@@ -28,6 +20,16 @@ namespace AzureFunctionHost.Infrastructure
         public T Find(Guid id)
         {
             return Collection[id];
+        }
+
+        public bool Exists(Guid id)
+        {
+            return Collection.ContainsKey(id);
+        }
+
+        public bool Exists(Func<T, bool> predicate)
+        {
+            return Collection.Values.Any(predicate);
         }
 
         public IEnumerable<T> Query()

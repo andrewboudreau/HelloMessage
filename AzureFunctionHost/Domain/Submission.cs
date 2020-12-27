@@ -1,14 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using AzureFunctionHost.Application;
+using AzureFunctionHost.Domain.Events;
+using MediatR;
 
 namespace AzureFunctionHost.Domain
 {
-    public class Submission : IIdentifiable<Guid>
+    public class Submission : IIdentifiable<Guid>, IHaveDomainEvents
     {
-        protected Submission(Guid submissionId, string userId, DateTimeOffset created)
+        private readonly List<INotification> domainEvents;
+
+        protected Submission(Guid submissionId, string userId, DateTimeOffset created, SubmissionResponse? response = null)
         {
             SubmissionId = submissionId;
             UserId = userId;
             Created = created;
+            Response = response;
+
+            domainEvents = new List<INotification>();
         }
 
         public Guid SubmissionId { get; private set; }
@@ -17,12 +26,28 @@ namespace AzureFunctionHost.Domain
 
         public DateTimeOffset Created { get; private set; }
 
+        public bool Pending => Response is null;
+
+        public bool Rejected => Response?.Approved ?? false;
+
+        public bool Approved => Response?.Approved ?? false;
+
+        public SubmissionResponse? Response { get; private set; }
+
         Guid IIdentifiable<Guid>.Id => SubmissionId;
 
-        public Approval ApproveBy(string approver)
-        {
+        IEnumerable<INotification> IHaveDomainEvents.DomainEvents => domainEvents;
 
-            return Approval.By(approver, SubmissionId);
+        public void ApproveBy(string approver)
+        {
+            var response = SubmissionResponse.ApprovalBy(approver, SubmissionId);
+            domainEvents.Add(new SubmissionApproved(this, response));
+        }
+
+        public void RejectBy(string rejector)
+        {
+            var response = SubmissionResponse.RejectionBy(rejector, SubmissionId);
+            domainEvents.Add(new SubmissionRejected(this, response));
         }
 
         public static Submission For(string userId)

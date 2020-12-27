@@ -12,9 +12,7 @@ namespace AzureFunctionHost
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddSingleton(new ApprovalRepository());
             builder.Services.AddSingleton(new SubmissionRepository());
-
             builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
         }
     }
