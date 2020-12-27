@@ -32,7 +32,7 @@ namespace AzureFunctionHost.Domain
 
         public static SubmissionResponse RejectionBy(string userId, Guid submissionId)
         {
-            var approvalId = submissionId; // new IdGenerator().NextId();
+            var approvalId = submissionId;
             return new SubmissionResponse(approvalId, userId, false, DateTimeOffset.Now);
         }
     }

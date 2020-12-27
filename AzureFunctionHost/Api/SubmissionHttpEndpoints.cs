@@ -16,15 +16,15 @@ namespace AzureFunctionHost.Api
 {
     public class SubmissionHttpEndpoints
     {
-        private readonly ISender sender;
+        private readonly ISender mediator;
 
-        public SubmissionHttpEndpoints(ISender sender)
+        public SubmissionHttpEndpoints(ISender mediator)
         {
-            this.sender = sender;
+            this.mediator = mediator;
         }
 
-        [FunctionName("Submission")]
-        public async Task<IActionResult> Submit([HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submission/{user}")] HttpRequest httpRequest, string user, ILogger log)
+        [FunctionName("PostSubmission")]
+        public async Task<IActionResult> PostSubmission([HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submission/{user}")] HttpRequest httpRequest, string user, ILogger log)
         {
             log.LogInformation($"Request Submitted for '{user}'.");
             if (string.IsNullOrWhiteSpace(user))
@@ -33,13 +33,13 @@ namespace AzureFunctionHost.Api
             }
 
             var request = new SubmitForApproval(user);
-            var response = await sender.Send(request);
+            var response = await mediator.Send(request);
 
             return new OkObjectResult(response);
         }
 
-        [FunctionName("SubmissionStatus")]
-        public async Task<IActionResult> Query(
+        [FunctionName("GetSubmission")]
+        public async Task<IActionResult> GetSubmission(
              [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submission/{submissionId:guid}")] HttpRequest httpRequest, Guid submissionId)
         {
             if (submissionId == default)
@@ -47,8 +47,10 @@ namespace AzureFunctionHost.Api
                 throw new ArgumentException("Cannot be null, empty, or default.", nameof(submissionId));
             }
 
-            var query = new QuerySubmissionStatus(submissionId);
-            return new OkObjectResult(await sender.Send(query));
+            var query = new QueryStatus(submissionId);
+            var status = await mediator.Send(query);
+
+            return new OkObjectResult(status.ToString());
         }
     }
 }

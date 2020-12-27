@@ -13,40 +13,30 @@ namespace AzureFunctionHost.Application
 {
     public class ApprovalHttpEndpoints
     {
-        private readonly ISender sender;
+        private readonly ISender mediator;
 
-        public ApprovalHttpEndpoints(ISender sender)
+        public ApprovalHttpEndpoints(ISender mediator)
         {
-            this.sender = sender;
+            this.mediator = mediator;
         }
 
-        [FunctionName("Approval")]
-        public async Task<IActionResult> Approve(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approval/all/{user}")] HttpRequest httpRequest, string user)
+        [FunctionName("GetPending")]
+        public async Task<IActionResult> GetPending([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approval/pending")] HttpRequest httpRequest)
         {
-            var request = new ApproveAllSubmissions(user);
-            await sender.Send(request);
-
-            return new OkResult();
-        }
-
-        [FunctionName("ApprovalBatch")]
-        public async Task<IActionResult> ApproveBatch(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approval/all/{user}")] HttpRequest httpRequest, string user)
-        {
-            var request = new ApproveAllSubmissions(user);
-            await sender.Send(request);
-
-            return new OkResult();
-        }
-
-        [FunctionName("ApprovalQuery")]
-        public async Task<IActionResult> Query([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approval/pending")] HttpRequest httpRequest)
-        {
-            var query = new QueryPendingSubmissions();
-            var results = await sender.Send(query);
+            var query = new QueryPending();
+            var results = await mediator.Send(query);
 
             return new OkObjectResult(results);
+        }
+
+        [FunctionName("PostApproval")]
+        public async Task<IActionResult> PostApproval(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approve/{submissionId}/by/{approverId}")] HttpRequest httpRequest, string user)
+        {
+            var request = new ApproveAllSubmissions(user);
+            await mediator.Send(request);
+
+            return new OkResult();
         }
     }
 }

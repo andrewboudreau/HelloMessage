@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AzureFunctionHost.Application;
+
 using AzureFunctionHost.Domain.Events;
 using MediatR;
 
@@ -26,10 +26,19 @@ namespace AzureFunctionHost.Domain
 
         public DateTimeOffset Created { get; private set; }
 
+        /// <summary>
+        /// Gets a boolean which is true when a <see cref="Submission"/> has a response.
+        /// </summary>
         public bool Pending => Response is null;
 
+        /// <summary>
+        /// Gets a boolean which is true when a <see cref="Submission"/> has a response and it's not 'Approved'.
+        /// </summary>
         public bool Rejected => Response?.Approved ?? false;
 
+        /// <summary>
+        /// Gets a boolean which is true when a <see cref="Submission"/> has a response and is 'Approved'./
+        /// </summary>
         public bool Approved => Response?.Approved ?? false;
 
         public SubmissionResponse? Response { get; private set; }

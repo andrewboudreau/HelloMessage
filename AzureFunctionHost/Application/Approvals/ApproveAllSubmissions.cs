@@ -38,7 +38,7 @@ namespace AzureFunctionHost.Application.Approvals
             foreach (var submission in pending.ToList())
             {
                 submission.ApproveBy(request.ApproverId);
-                publisher.PublishAll(submission);
+                publisher.PublishAllDomainEvents(submission);
             }
 
             return Unit.Task;

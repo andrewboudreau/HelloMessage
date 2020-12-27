@@ -10,28 +10,28 @@ using MediatR;
 
 namespace AzureFunctionHost.Application.Approvals
 {
-    public class QueryPendingSubmissions : IRequest<IEnumerable<Guid>>
+    public class QueryPending : IRequest<IEnumerable<Guid>>
     {
     }
 
-    public class QueryPendingSubmissionsHandler : IRequestHandler<QueryPendingSubmissions, IEnumerable<Guid>>
+    public class QueryPendingHandler : IRequestHandler<QueryPending, IEnumerable<Guid>>
     {
         private readonly SubmissionRepository submissions;
 
-        public QueryPendingSubmissionsHandler(SubmissionRepository submissions)
+        public QueryPendingHandler(SubmissionRepository submissions)
         {
             this.submissions = submissions;
         }
 
-        public Task<IEnumerable<Guid>> Handle(QueryPendingSubmissions request, CancellationToken cancellationToken)
+        public Task<IEnumerable<Guid>> Handle(QueryPending request, CancellationToken cancellationToken)
         {
-                        return Task.FromResult(Enumerable.Empty<Guid>());
+            return Task.FromResult(Enumerable.Empty<Guid>());
         }
     }
 
-    public class PendingSubmissionDto
+    public class PendingSubmission
     {
-        public PendingSubmissionDto(Submission submission)
+        public PendingSubmission(Submission submission)
         {
             SubmissionId = submission.SubmissionId;
             Created = submission.Created;
@@ -40,6 +40,7 @@ namespace AzureFunctionHost.Application.Approvals
         public Guid SubmissionId { get; }
 
         public DateTimeOffset Created { get; }
+
         public string UserId { get; }
     }
 }
