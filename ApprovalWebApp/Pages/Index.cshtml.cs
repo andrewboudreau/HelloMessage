@@ -25,5 +25,11 @@ namespace ApprovalWebApp.Pages
         {
             Pending = await client.GetPending();
         }
+
+        public async Task<IActionResult> OnPost()
+        {
+            await client.PostApprovalAll(Environment.MachineName);
+            return RedirectToPage();
+        }
     }
 }

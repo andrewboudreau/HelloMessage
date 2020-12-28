@@ -15,10 +15,10 @@ namespace Tests.Domain
         {
             var submission = Submission.For(Name());
 
-            submission.Response.Should().BeNull(because: "the submission does not have a response.");
-            submission.Pending.Should().Be(true, because: "the submission does not have a response.");
-            submission.Rejected.Should().Be(false, because: "the submission does not have a response.");
-            submission.Approved.Should().Be(false, because: "the submission does not have a response.");
+            submission.Response.Should().BeNull(because: "the submission does not have a response");
+            submission.Pending.Should().Be(true, because: "the submission does not have a response");
+            submission.Rejected.Should().Be(false, because: "the submission does not have a response");
+            submission.Approved.Should().Be(false, because: "the submission does not have a response");
         }
 
         [TestMethod]

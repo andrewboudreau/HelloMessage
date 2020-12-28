@@ -27,15 +27,15 @@ namespace Tests.Domain
             submission.ApproveBy(Name());
 
             // Assert
-            submission.Approved.Should().Be(true, because: "approving should approve the submission.");
+            submission.Approved.Should().Be(true, because: "approving should approve the submission");
 
-            submission.Response.Should().NotBeNull(because: "approving should provide a response.");
-            submission.Pending.Should().Be(false, because: "approving should provide a response.");
-            submission.Rejected.Should().Be(false, because: "approving should not reject the submission.");
+            submission.Response.Should().NotBeNull(because: "approving should provide a response");
+            submission.Pending.Should().Be(false, because: "approving should provide a response");
+            submission.Rejected.Should().Be(false, because: "approving should not reject the submission");
         }
 
         [TestMethod]
-        public void ShouldHaveGivenApproverName()
+        public void ShouldHaveApproverName()
         {
             var approver = Name();
             submission.ApproveBy(approver);
@@ -55,7 +55,7 @@ namespace Tests.Domain
             submission.ApproveBy(Name());
 
             var sut = submission as IHaveDomainEvents;
-            sut.DomainEvents.Should().HaveCountGreaterThan(0, because: "an event should be produced when a submission is approved.");
+            sut.DomainEvents.Should().HaveCountGreaterThan(0, because: "an event should be produced when a submission is approved");
         }
     }
 }

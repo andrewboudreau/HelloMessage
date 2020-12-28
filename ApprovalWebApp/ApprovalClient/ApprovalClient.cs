@@ -11,7 +11,7 @@ namespace ApprovalWebApp
     {
         Task<Guid> PostApproval(string approverId, Guid submissionId);
 
-        Task<Guid> PostApprovalAll(string approverId);
+        Task PostApprovalAll(string approverId);
 
         Task<PendingSubmission[]> GetPending();
     }
@@ -54,7 +54,7 @@ namespace ApprovalWebApp
             return approvalId;
         }
 
-        public async Task<Guid> PostApprovalAll(string approverId)
+        public async Task PostApprovalAll(string approverId)
         {
             var url = options.Value.PostApprovalAll
                 .Replace("{approverId}", approverId);
@@ -66,9 +66,6 @@ namespace ApprovalWebApp
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
                 response.EnsureSuccessStatusCode();
             }
-
-            var approvalId = await Deserialize<Guid>(await response.Content.ReadAsStreamAsync());
-            return approvalId;
         }
 
         private static async Task<T> Deserialize<T>(Stream stream)

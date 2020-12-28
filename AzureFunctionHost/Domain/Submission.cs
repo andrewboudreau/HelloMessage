@@ -26,6 +26,8 @@ namespace AzureFunctionHost.Domain
 
         public DateTimeOffset Created { get; private set; }
 
+        public SubmissionResponse? Response { get; private set; }
+
         /// <summary>
         /// Gets a boolean which is true when a <see cref="Submission"/> has a response.
         /// </summary>
@@ -34,14 +36,12 @@ namespace AzureFunctionHost.Domain
         /// <summary>
         /// Gets a boolean which is true when a <see cref="Submission"/> has a response and it's not 'Approved'.
         /// </summary>
-        public bool Rejected => Response?.Approved ?? false;
+        public bool Rejected => !Pending && !Response!.Approved;
 
         /// <summary>
         /// Gets a boolean which is true when a <see cref="Submission"/> has a response and is 'Approved'./
         /// </summary>
-        public bool Approved => Response?.Approved ?? false;
-
-        public SubmissionResponse? Response { get; private set; }
+        public bool Approved => !Pending && Response!.Approved;
 
         Guid IIdentifiable<Guid>.Id => SubmissionId;
 
@@ -49,14 +49,14 @@ namespace AzureFunctionHost.Domain
 
         public void ApproveBy(string approver)
         {
-            var response = SubmissionResponse.ApprovalBy(approver, SubmissionId);
-            domainEvents.Add(new SubmissionApproved(this, response));
+            Response = SubmissionResponse.ApprovalBy(approver, SubmissionId);
+            domainEvents.Add(new SubmissionApproved(this, Response));
         }
 
         public void RejectBy(string rejector)
         {
-            var response = SubmissionResponse.RejectionBy(rejector, SubmissionId);
-            domainEvents.Add(new SubmissionRejected(this, response));
+            Response = SubmissionResponse.RejectionBy(rejector, SubmissionId);
+            domainEvents.Add(new SubmissionRejected(this, Response));
         }
 
         public static Submission For(string userId)
