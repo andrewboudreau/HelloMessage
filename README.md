@@ -8,7 +8,7 @@ Azure functions act as a host for the domain to send, receive, and store the dat
 ## Domain
 ### Submission
 A `Submission` is created for a `User` and submitted to the domain. 
-A `Submission` can be `Accepted` or `Rejected` and will be in `Pending` state until the submission receieves a `Response`.
+A `Submission` can be `Accepted` or `Rejected` and will be in `Pending` state until the submission receives a `Response`.
 An `Submission` will no not be `Pending` once an approval or rejection has been applied.
 An `Approver` can accept or reject a `Submission`.
 
@@ -17,10 +17,10 @@ Application is the business logic and the first class consumer of the Domain. It
 take dependencies on the infrastructure but do not implement the details directly.
 
 ## Api
-Two endpoints provide the interfaces need to submit and responde to submissions.
+Two endpoints provide the interfaces need to submit and response to submissions.
 
 ### Submission
-Submission HTTP endpoints provides a way to send and chekc the status of Submissions on the host
+Submission HTTP endpoints provides a way to send and check the status of Submissions on the host
 
 #### Approval
 Approval HTTP endpoitns provide a way to query the pending `Submissions` as well as accept or reject the requests.
