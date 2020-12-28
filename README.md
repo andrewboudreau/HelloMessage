@@ -28,8 +28,8 @@ Approval HTTP endpoitns provide a way to query the pending `Submissions` as well
 ## Infrastructure
 Provides the metal and hardware need to receive, send, and store data.
 
-#SubmissionCommandLine
+# SubmissionCommandLine
 A console terminal that send submissions to the microservice.
 
-#ApprovalWebApp
+# ApprovalWebApp
 A website to query and approve active submissions.
