@@ -32,4 +32,4 @@ Provides the metal and hardware need to receive, send, and store data.
 A console terminal that send submissions to the microservice.
 
 # ApprovalWebApp
-A website to query and approve active submissions.
+A website to query and approve pending submissions.
