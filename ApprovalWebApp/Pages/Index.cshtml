@@ -5,6 +5,14 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Pending</h1>
+    <form method="POST">
+        <ul>
+            @foreach (var pending in Model.Pending)
+            {
+                <li><input type="checkbox" value="@pending.SubmissionId" />@pending.UserId <small>@pending.Created</small></li>
+            }
+        </ul>
+        <input type="submit" value="Approve All" />
+    </form>
 </div>

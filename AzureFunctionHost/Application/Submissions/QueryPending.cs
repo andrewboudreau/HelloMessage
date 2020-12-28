@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,11 +9,11 @@ using MediatR;
 
 namespace AzureFunctionHost.Application.Approvals
 {
-    public class QueryPending : IRequest<IEnumerable<Guid>>
+    public class QueryPending : IRequest<PendingSubmission[]>
     {
     }
 
-    public class QueryPendingHandler : IRequestHandler<QueryPending, IEnumerable<Guid>>
+    public class QueryPendingHandler : IRequestHandler<QueryPending, PendingSubmission[]>
     {
         private readonly SubmissionRepository submissions;
 
@@ -23,9 +22,14 @@ namespace AzureFunctionHost.Application.Approvals
             this.submissions = submissions;
         }
 
-        public Task<IEnumerable<Guid>> Handle(QueryPending request, CancellationToken cancellationToken)
+        public Task<PendingSubmission[]> Handle(QueryPending request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(Enumerable.Empty<Guid>());
+            var results = submissions.Query()
+                .Where(x => x.Pending)
+                .Select(PendingSubmission.Create)
+                .ToArray();
+
+            return Task.FromResult(results);
         }
     }
 
@@ -42,5 +46,10 @@ namespace AzureFunctionHost.Application.Approvals
         public DateTimeOffset Created { get; }
 
         public string UserId { get; }
+
+        public static PendingSubmission Create(Submission submission)
+        {
+            return new PendingSubmission(submission);
+        }
     }
 }

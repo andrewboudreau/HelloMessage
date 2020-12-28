@@ -54,7 +54,7 @@ namespace SubmissionCommandLine
                                 }
 
                                 var status = await client.GetStatus(submissionId);
-                                logger.LogInformation($"Status is {(status ? "accepted" : "rejected")} for {submissionId}.");
+                                logger.LogInformation($"Status is {status} for {submissionId}.");
                             }
                             else
                             {

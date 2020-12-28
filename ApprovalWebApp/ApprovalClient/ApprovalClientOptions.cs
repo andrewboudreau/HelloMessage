@@ -6,9 +6,11 @@ namespace ApprovalWebApp
     {
         public const string ApprovalWebApp = "ApprovalWebApp";
 
+        public string GetPending { get; set; }
+
         public string PostApproval { get; set; }
 
-        public string GetPending { get; set; }
+        public string PostApprovalAll { get; set; }
 
         public string AccessToken { get; set; }
 

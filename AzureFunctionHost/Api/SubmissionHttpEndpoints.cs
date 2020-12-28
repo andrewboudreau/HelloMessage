@@ -38,9 +38,10 @@ namespace AzureFunctionHost.Api
             return new OkObjectResult(response);
         }
 
-        [FunctionName("GetSubmission")]
-        public async Task<IActionResult> GetSubmission(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submission/{submissionId:guid}")] HttpRequest httpRequest, Guid submissionId)
+        [FunctionName("GetStatus")]
+        public async Task<IActionResult> GetStatus(
+             [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submission/{submissionId:guid}")] HttpRequest httpRequest, 
+             Guid submissionId)
         {
             if (submissionId == default)
             {

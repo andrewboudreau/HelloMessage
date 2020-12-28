@@ -13,7 +13,14 @@ namespace SubmissionCommandLine
     {
         Task<Guid> PostSubmission(string userId);
 
-        Task<bool> GetStatus(Guid submissionId);
+        Task<SubmissionStatus> GetStatus(Guid submissionId);
+    }
+
+    public enum SubmissionStatus
+    {
+        Pending = 0,
+        Approved = 1,
+        Rejected = 2
     }
 
     /// <summary>
@@ -54,10 +61,18 @@ namespace SubmissionCommandLine
         /// </summary>
         /// <param name="submissionId">The submission to check.</param>
         /// <returns>True if the submission has been approved.</returns>
-        public async Task<bool> GetStatus(Guid submissionId)
+        public async Task<SubmissionStatus> GetStatus(Guid submissionId)
         {
             using var response = await httpClient.GetAsync(options.Value.Status.Replace("{submissionId}", submissionId.ToString()));
-            return await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync());
+            var status = await response.Content.ReadAsStringAsync();
+
+            return status.ToLowerInvariant() switch
+            {
+                "pending" => SubmissionStatus.Pending,
+                "approved" => SubmissionStatus.Approved,
+                "rejected" => SubmissionStatus.Rejected,
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }
