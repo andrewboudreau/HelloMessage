@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunctionHost", "AzureF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmissionCommandLine", "SubmissionCommandLine\SubmissionCommandLine.csproj", "{A2C120E9-4378-4FF8-ABE5-83FC42C6588A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D18D00EE-361B-404F-9D60-D5D3E436FDEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{D18D00EE-361B-404F-9D60-D5D3E436FDEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

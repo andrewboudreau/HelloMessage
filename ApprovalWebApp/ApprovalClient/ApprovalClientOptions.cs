@@ -8,7 +8,11 @@ namespace ApprovalWebApp
 
         public string GetPending { get; set; }
 
+        public string GetAudits { get; set; }
+
         public string PostApproval { get; set; }
+
+        public string PostRejection { get; set; }
 
         public string PostApprovalAll { get; set; }
 

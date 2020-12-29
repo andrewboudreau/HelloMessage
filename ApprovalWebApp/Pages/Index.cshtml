@@ -1,18 +1,43 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Pending";
 }
+@section Styles{
+    <style>
+        .form.pending ul {
+            list-style: none;
+        }
 
-<div class="text-center">
-    <h1 class="display-4">Pending</h1>
-    <form method="POST">
-        <ul>
-            @foreach (var pending in Model.Pending)
-            {
-                <li><input type="checkbox" value="@pending.SubmissionId" />@pending.UserId <small>@pending.Created</small></li>
-            }
-        </ul>
-        <input type="submit" value="Approve All" />
-    </form>
+        .form.pending .input[type='checkbox'] {
+            width: 15px;
+            height: 15px;
+        }
+    </style>
+}
+<div>
+    <h1 class="display-4">Respond to Pending Submissions</h1>
+    @if (Model.Pending.Any())
+    {
+        <form method="POST" class="form pending">
+            <ul>
+                @foreach (var pending in Model.Pending)
+                {
+                    <li>
+                        <label class="form-control" for="@pending.SubmissionId">
+                            <input class="form-input" name="submissions" type="checkbox" value="@pending.SubmissionId" />
+                            <strong>@pending.UserId</strong>
+                            <small>@pending.Created</small>
+                        </label>
+                    </li>
+                }
+            </ul>
+            <input type="submit" value="Approve Selected" />
+            REJECT <input type="checkbox" name="reject" value="true" />
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-info">The are no submissions pending.</div>
+    }
 </div>

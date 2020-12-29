@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
@@ -9,11 +10,15 @@ namespace ApprovalWebApp
 {
     public interface IApprovalClient
     {
-        Task<Guid> PostApproval(string approverId, Guid submissionId);
+        Task PostApproval(string approverId, Guid submissionId);
+
+        Task PostRejection(string approverId, Guid submissionId);
 
         Task PostApprovalAll(string approverId);
 
         Task<PendingSubmission[]> GetPending();
+
+        Task<SubmissionAudit[]> GetAudits(int skip, int take);
     }
 
     public class ApprovalClient : IApprovalClient
@@ -36,7 +41,14 @@ namespace ApprovalWebApp
             return await Deserialize<PendingSubmission[]>(await response.Content.ReadAsStreamAsync());
         }
 
-        public async Task<Guid> PostApproval(string approverId, Guid submissionId)
+        public async Task<SubmissionAudit[]> GetAudits(int skip, int take)
+        {
+            using var response = await httpClient.GetAsync(options.Value.GetAudits);
+            Console.WriteLine("GetAudits: " + await response.Content.ReadAsStringAsync());
+            return await Deserialize<SubmissionAudit[]>(await response.Content.ReadAsStreamAsync());
+        }
+
+        public async Task PostApproval(string approverId, Guid submissionId)
         {
             var url = options.Value.PostApproval
                 .Replace("{approverId}", approverId)
@@ -49,9 +61,22 @@ namespace ApprovalWebApp
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
                 response.EnsureSuccessStatusCode();
             }
+        }
 
-            var approvalId = await Deserialize<Guid>(await response.Content.ReadAsStreamAsync()); ;
-            return approvalId;
+        public async Task PostRejection(string approverId, Guid submissionId)
+        {
+            var url = options.Value.PostRejection
+                .Replace("{approverId}", approverId)
+                .Replace("{submissionId}", submissionId.ToString());
+
+            using var response = await httpClient.PostAsync(url, null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                response.EnsureSuccessStatusCode();
+            }
+
         }
 
         public async Task PostApprovalAll(string approverId)

@@ -30,14 +30,35 @@ namespace AzureFunctionHost.Application
             return new OkObjectResult(results);
         }
 
+        [FunctionName("GetAudits")]
+        public async Task<IActionResult> GetAudits([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "approve/audits")] HttpRequest httpRequest)
+        {
+            var query = new QueryAudits();
+            var results = await mediator.Send(query);
+
+            return new OkObjectResult(results);
+        }
+
         [FunctionName("PostApproval")]
         public async Task<IActionResult> PostApproval(
             [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approve/{submissionId:guid}/by/{approverId}")] HttpRequest httpRequest, 
             Guid submissionId, 
             string approverId)
         {
-            var request = new ApproveAllSubmissions(approverId);
-            await mediator.Send(request);
+            var command = new ApproveSubmission(approverId, submissionId);
+            await mediator.Send(command);
+
+            return new OkResult();
+        }
+
+        [FunctionName("PostRejection")]
+        public async Task<IActionResult> PostRejection(
+           [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "reject/{submissionId:guid}/by/{approverId}")] HttpRequest httpRequest,
+           Guid submissionId,
+           string approverId)
+        {
+            var command = new RejectSubmission(approverId, submissionId);
+            await mediator.Send(command);
 
             return new OkResult();
         }

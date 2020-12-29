@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,9 +27,31 @@ namespace ApprovalWebApp.Pages
             Pending = await client.GetPending();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPost(Guid[] submissions, bool reject = false)
         {
-            await client.PostApprovalAll(Environment.MachineName);
+            using var throttler = new SemaphoreSlim(initialCount: 5);
+
+            var tasks = submissions.Select(async submissionId =>
+            {
+                try
+                {
+                    await throttler.WaitAsync();
+                    if (reject)
+                    {
+                        await client.PostRejection(Environment.MachineName, submissionId);
+                    }
+                    else
+                    {
+                        await client.PostApproval(Environment.MachineName, submissionId);
+                    }
+                }
+                finally
+                {
+                    throttler.Release();
+                }
+            });
+
+            await Task.WhenAll(tasks);
             return RedirectToPage();
         }
     }
