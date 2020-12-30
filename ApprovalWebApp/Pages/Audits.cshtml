@@ -49,6 +49,46 @@
     </tbody>
 </table>
 
+<div class="modal alert alert-danger fade" id="ErrorModal" tabindex="-1" role="dialog" aria-labelledby="ErrorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>Connection Error...</div>
+                <div><strong style="font-size: 1.5em;">Hit Refresh/F5</strong> to refresh. ;)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{  <!--Reference the SignalR library. -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@3.1.8/dist/browser/signalr.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function onConnectionError(error) {
+                if (error && error.message) {
+                    console.error(error.message);
+                }
+
+                var modal = document.getElementById('ErrorModal');
+                modal.classList.add('in');
+                modal.style = 'display: block;';
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/approval').build();
+
+            // connection.on('broadcastMessage', (name, message) => console.log(`${name} was ${message}`));
+            connection.on('broadcastMessage', (name, message) => window.location.href = window.location.href);
+
+            connection.onclose(onConnectionError);
+
+            connection.start();
+        });
+    </script>
+}
+
 @functions{
     public string TimeAgo(DateTimeOffset input)
     {

@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 
 using AzureFunctionHost.Application.Approvals;
 using System;
+using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 
 namespace AzureFunctionHost.Application
 {
@@ -41,13 +42,21 @@ namespace AzureFunctionHost.Application
 
         [FunctionName("PostApproval")]
         public async Task<IActionResult> PostApproval(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approve/{submissionId:guid}/by/{approverId}")] HttpRequest httpRequest, 
-            Guid submissionId, 
-            string approverId)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "approve/{submissionId:guid}/by/{approverId}")] HttpRequest httpRequest,
+            Guid submissionId,
+            string approverId,
+            [SignalR(HubName = "ApprovalHub")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             var command = new ApproveSubmission(approverId, submissionId);
             await mediator.Send(command);
 
+            var events = new SignalRMessage
+            {
+                Target = $"broadcastMessage",
+                Arguments = new[] { $"{submissionId}", "approved" }
+            };
+
+            await signalRMessages.AddAsync(events);
             return new OkResult();
         }
 
@@ -55,11 +64,19 @@ namespace AzureFunctionHost.Application
         public async Task<IActionResult> PostRejection(
            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "reject/{submissionId:guid}/by/{approverId}")] HttpRequest httpRequest,
            Guid submissionId,
-           string approverId)
+           string approverId,
+           [SignalR(HubName = "ApprovalHub")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             var command = new RejectSubmission(approverId, submissionId);
             await mediator.Send(command);
 
+            var events = new SignalRMessage
+            {
+                Target = $"broadcastMessage",
+                Arguments = new[] { $"{submissionId}", "rejected" }
+            };
+
+            await signalRMessages.AddAsync(events);
             return new OkResult();
         }
 

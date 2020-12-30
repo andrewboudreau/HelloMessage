@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Extensions.Logging;
 
 namespace AzureFunctionHost.Api
@@ -24,7 +25,11 @@ namespace AzureFunctionHost.Api
         }
 
         [FunctionName("PostSubmission")]
-        public async Task<IActionResult> PostSubmission([HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submission/{user}")] HttpRequest httpRequest, string user, ILogger log)
+        public async Task<IActionResult> PostSubmission(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "POST", Route = "submission/{user}")] HttpRequest httpRequest,
+            string user,
+            [SignalR(HubName = "SubmissionHub")] IAsyncCollector<SignalRMessage> signalRMessages,
+            ILogger log)
         {
             log.LogInformation($"Request Submitted for '{user}'.");
             if (string.IsNullOrWhiteSpace(user))
@@ -35,13 +40,22 @@ namespace AzureFunctionHost.Api
             var request = new SubmitForApproval(user);
             var response = await mediator.Send(request);
 
+            var message = new SignalRMessage
+            {
+                Target = $"broadcastMessage",
+                Arguments = new[] { request.UserId, "submitted" }
+            };
+
+            await signalRMessages.AddAsync(message);
+
             return new OkObjectResult(response);
         }
 
         [FunctionName("GetStatus")]
         public async Task<IActionResult> GetStatus(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submission/{submissionId:guid}")] HttpRequest httpRequest, 
-             Guid submissionId)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "submission/{submissionId:guid}")] HttpRequest httpRequest,
+            Guid submissionId,
+            [SignalR(HubName = "SubmissionHub")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             if (submissionId == default)
             {

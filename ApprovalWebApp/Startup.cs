@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.SignalR;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +23,7 @@ namespace ApprovalWebApp
         {
             services.AddRazorPages();
             services.AddHttpClient<IApprovalClient, ApprovalClient, ApprovalClientOptions>(Configuration);
+            services.AddSignalR().AddAzureSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +48,20 @@ namespace ApprovalWebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapHub<SubmissionHub>("/hubs/submission");
+                endpoints.MapHub<ApprovalHub>("/hubs/approval");
             });
         }
+    }
+    public class SubmissionHub : Hub
+    {
+        public Task BroadcastMessage(string name, string message) =>
+            Clients.All.SendAsync("broadcastMessage", name, message);
+    }
+
+    public class ApprovalHub : Hub
+    {
+        public Task BroadcastMessage(string name, string message) =>
+            Clients.All.SendAsync("broadcastMessage", name, message);
     }
 }

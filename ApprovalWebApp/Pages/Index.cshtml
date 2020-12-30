@@ -24,7 +24,7 @@
                 @foreach (var pending in Model.Pending)
                 {
                     <li>
-                        <label class="form-control" for="@pending.SubmissionId">
+                        <label class="form-control" for="submissions">
                             <input class="form-input" name="submissions" type="checkbox" value="@pending.SubmissionId" />
                             <strong>@pending.UserId</strong>
                             <small>@pending.Created</small>
@@ -33,7 +33,7 @@
                 }
             </ul>
             <input type="submit" value="Approve Selected" />
-            REJECT <input type="checkbox" name="reject" value="true" />
+            <label for="reject">REJECT <input type="checkbox" name="reject" value="true" /></label>
         </form>
     }
     else
@@ -41,3 +41,43 @@
         <div class="alert alert-info">The are no submissions pending.</div>
     }
 </div>
+
+<div class="modal alert alert-danger fade" id="ErrorModal" tabindex="-1" role="dialog" aria-labelledby="ErrorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>Connection Error...</div>
+                <div><strong style="font-size: 1.5em;">Hit Refresh/F5</strong> to refresh. ;)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{  <!--Reference the SignalR library. -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@3.1.8/dist/browser/signalr.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@3.1.8/dist/browser/signalr.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function onConnectionError(error) {
+                if (error && error.message) {
+                    console.error(error.message);
+                }
+
+                var modal = document.getElementById('ErrorModal');
+                modal.classList.add('in');
+                modal.style = 'display: block;';
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/submission').build();
+
+            connection.on('broadcastMessage', (name, message) => window.location.href = window.location.href);
+            connection.onclose(onConnectionError);
+
+            connection.start();
+        });
+    </script>
+}
